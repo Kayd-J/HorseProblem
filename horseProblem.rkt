@@ -1,34 +1,141 @@
 #lang racket
 
-
+;; Nombre: PDC-Sol
+;; Parametros: n pos
+;; Descripcion: Esta funcion desencadena todo el algoritmo en busca de una solucion desde la casillas actual (pos) en una matriz nxn
 (define (PDC n pos)
-  (cond [(and (number? n) (list? pos)) (pasoDos (crearListaLogica n) pos 0 (crearMatriz 1 1 n '()) n)]
+  (cond [(and (number? n) (list? pos)) (PDC_aux (crearListaLogica n) pos 1 n  pos '())]
         [else "Porfavor introduzca parametros validos"]))
 
-;; Nombre: pasoDos
-;; Parametros: listaLogica pos paso matrizSol n
-;; Descripcion: En base al algoritmo desarrollado esta funcion consta de p a fase 2 de este algoritmo, aqui aun no se realiza ninguna condicion de desempate,
+(define (PDC_aux listaLogica pos paso n posinicial res)
+  (paso_dos pos (actualizarLista listaLogica 1 1 pos paso '() n) paso (getCasillasAristas listaLogica (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n)) '() (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) n) n posinicial))
+
+
+
+;; Nombre: paso_dos
+;; Parametros: pos listaLogica pos paso paso2res(lista generada con getCasillasAristas) n
+;; Descripcion: En base al algoritmo desarrollado esta funcion consta de la fase 2 de este algoritmo, aqui aun no se realiza ninguna condicion de desempate,
 ;; sino que la funcion retorna una lista con las casillas a als que el caballo se puede mover que NO han sido visitadas y que tienen la menor cantidad de aristas
 ;; en caso de que el largo de la lista sea igual a uno significa que el caballo puede moverse ahi
 ;; Retorna: una lista de casillas disponibles para realizar un movimiento
 
-(define (pasoDos listaLogica pos paso matrizSol n)
-  (cond [(> paso (* n n)) listaLogica]
-        [else (getCasillasAristas pos listaLogica (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n)) '() (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) n) ]))
+(define (paso_dos pos listaLogica paso paso2res n posinicial)
+  (cond ;[(= paso 22) (list paso paso2res (crearMatriz 1 1 n '() listaLogica))]
+        [(= (length paso2res) 1)
+         (paso_dos (list (car (car paso2res)) (cadr (car paso2res))) (actualizarLista listaLogica 1 1 (car paso2res) (+ paso 1) '() n) (+ paso 1) (getCasillasAristas listaLogica (getNOvisitados (car paso2res) listaLogica (getDestinos listaLogica (car (car paso2res)) (cadr (car paso2res))) '() (calcularAristas (car (car paso2res)) (cadr (car paso2res)) n)) '() (length (getNOvisitados (car paso2res) listaLogica (getDestinos listaLogica (car (car paso2res)) (cadr (car paso2res))) '() (calcularAristas (car (car paso2res)) (cadr (car paso2res)) n))) (length (getNOvisitados (car paso2res) listaLogica (getDestinos listaLogica (car (car paso2res)) (cadr (car paso2res))) '() (calcularAristas (car (car paso2res)) (cadr (car paso2res)) n))) n) n posinicial) ]
+        ;[else (paso_dos pos listaLogica paso (cdr paso2res) n posinicial (res append (paso_dos (list (car (car paso2res)) (cadr (car paso2res))) (actualizarLista listaLogica 1 1 (car paso2res) (+ paso 1) '() n) (+ paso 1) (car paso2res) n posinicial res)))]
+        [else (paso_tres pos listaLogica paso (getCasillasEsquinas listaLogica paso2res '() (length paso2res) (length paso2res) n) n posinicial)]
+        ))
+
+;; Nombre: paso_tres
+;; Parametros: pos listaLogica pos paso paso3res(lista generada con getCasillasEsquinas) n
+;; Descripcion: Esta funcion es una de las condiciones de desempate de las diferentes casillas disponibles para moverse, este desempate se basa
+;; en buscar la casilla mas cercana a una esquina, y si aun hay varias que cumplen la condicion se procede al paso_4
+;; Retorna: una lista con posibles destinos
+
+(define (paso_tres pos listaLogica paso paso3res n posinicial)
+  (cond [(= (length paso3res) 1) (paso_dos (list (car (car paso3res)) (cadr (car paso3res))) (actualizarLista listaLogica 1 1 (car paso3res) (+ paso 1) '() n) (+ paso 1) (getCasillasAristas listaLogica (getNOvisitados (list (car (car paso3res)) (cadr (car paso3res))) listaLogica (getDestinos listaLogica (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res))))) '() (calcularAristas (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res)))) n)) '() (length (getNOvisitados (list (car (car paso3res)) (cadr (car paso3res))) listaLogica (getDestinos listaLogica (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res))))) '() (calcularAristas (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res)))) n))) (length (getNOvisitados (list (car (car paso3res)) (cadr (car paso3res))) listaLogica (getDestinos listaLogica (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res))))) '() (calcularAristas (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res)))) n))) n) n posinicial)]
+        [else (paso_cuatro pos listaLogica paso (getCasillasPared listaLogica paso3res '() (length paso3res) (length paso3res) n) n posinicial)]))
+
+
+;; Nombre: paso_cuatro
+;; Parametros: pos listaLogica paso paso4res(listaGenerada con getCasillasPared) n
+;; Descripcion: El paso 4 y penultimo criterio de desempate del algoritmo se basa en escoger las casillas basandose en su cercania a una de las paredes del tablero, en este caso
+;; se utilizara la columna 1 de la matriz para este criterio de desempate
+
+(define (paso_cuatro pos listaLogica paso paso4res n posinicial)
+  (cond [(= (length paso4res) 1) (paso_dos (list (car (car paso4res)) (cadr (car paso4res))) (actualizarLista listaLogica 1 1 (car paso4res) (+ paso 1) '() n) (+ paso 1) (getCasillasAristas listaLogica (getNOvisitados (list (car (car paso4res)) (cadr (car paso4res))) listaLogica (getDestinos listaLogica (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res))))) '() (calcularAristas (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res)))) n)) '() (length (getNOvisitados (list (car (car paso4res)) (cadr (car paso4res))) listaLogica (getDestinos listaLogica (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res))))) '() (calcularAristas (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res)))) n))) (length (getNOvisitados (list (car (car paso4res)) (cadr (car paso4res))) listaLogica (getDestinos listaLogica (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res))))) '() (calcularAristas (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res)))) n))) n) n posinicial)]     
+        [(> (length paso4res) 1) (paso_cinco pos listaLogica paso (getCasillaCuadrante pos paso4res '() 10) n posinicial)]
+        [else listaLogica]))
         
 
 
-;; Nombre: getCasillasAristas
-;; Parametros: pos listaLogica noVisitados(lista generada por la funcion getNOvisitados) destinosPosibles contador flag  n
-;; Descripcion: Realiza un trabajo similar a getNOvisitados, pero en vez de buscar que casillas no han sido visitadas busca las de menor cantidad de aristas
-;; Retorna: Una lista de pares ordenados con los pares ordenados que perteneces a las casillas con menos aristas
+;; Nombre: paso_cinco
+;; Parametros: pos listaLogica paso paso5res(lista generada con getCasillasCuadrante) n posinicial
+;; Descripcion: El ultimo criterio de desempate del algoritmo se basa en escoger las casillas basandose en escoger sus movimientos segun la posicion de los destinos posibles
+;; de acuerdo al sentido horario de un reloj
 
-(define (getCasillasAristas pos listaLogica noVisitados destinosPosibles contador flag n)
+(define (paso_cinco pos listaLogica paso paso5res n posinicial)
+  (paso_dos (list (car (car paso5res)) (cadr (car paso5res))) (actualizarLista listaLogica 1 1 (car paso5res) (+ paso 1) '() n) (+ paso 1) (getCasillasAristas listaLogica (getNOvisitados (list (car (car paso5res)) (cadr (car paso5res))) listaLogica (getDestinos listaLogica (car (list (car (car paso5res)) (cadr (car paso5res)))) (cadr (list (car (car paso5res)) (cadr (car paso5res))))) '() (calcularAristas (car (list (car (car paso5res)) (cadr (car paso5res)))) (cadr (list (car (car paso5res)) (cadr (car paso5res)))) n)) '() (length (getNOvisitados (list (car (car paso5res)) (cadr (car paso5res))) listaLogica (getDestinos listaLogica (car (list (car (car paso5res)) (cadr (car paso5res)))) (cadr (list (car (car paso5res)) (cadr (car paso5res))))) '() (calcularAristas (car (list (car (car paso5res)) (cadr (car paso5res)))) (cadr (list (car (car paso5res)) (cadr (car paso5res)))) n))) (length (getNOvisitados (list (car (car paso5res)) (cadr (car paso5res))) listaLogica (getDestinos listaLogica (car (list (car (car paso5res)) (cadr (car paso5res)))) (cadr (list (car (car paso5res)) (cadr (car paso5res))))) '() (calcularAristas (car (list (car (car paso5res)) (cadr (car paso5res)))) (cadr (list (car (car paso5res)) (cadr (car paso5res)))) n))) n) n posinicial))
+
+;; Nombre: getCasillascuadrante
+;; Parametros: pos paso5res res prioridad
+;; Descripcion: Segun la prioridad donde 1 es el primer movimiento en sentido horario y 8 el ultimo la funcion se encarga de guardar en la variable res
+;; el destino con la prioridad mas cercana a 1
+
+(define (getCasillaCuadrante pos paso5res res prioridad)
+  (cond [(null? paso5res) res]
+        [(and (= (car (car paso5res)) (- (car pos) 2)) (= (cadr (car paso5res)) (+ (cadr pos) 1)) (< 1 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 1)] 
+        [(and (= (car (car paso5res)) (- (car pos) 1)) (= (cadr (car paso5res)) (+ (cadr pos) 2)) (< 2 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 2)]
+        [(and (= (car (car paso5res)) (+ (car pos) 1)) (= (cadr (car paso5res)) (+ (cadr pos) 2)) (< 3 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 3)]
+        [(and (= (car (car paso5res)) (+ (car pos) 2)) (= (cadr (car paso5res)) (+ (cadr pos) 1)) (< 4 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 4)]
+        [(and (= (car (car paso5res)) (+ (car pos) 2)) (= (cadr (car paso5res)) (- (cadr pos) 1)) (< 5 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 5)]
+        [(and (= (car (car paso5res)) (+ (car pos) 1)) (= (cadr (car paso5res)) (- (cadr pos) 2)) (< 6 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 6)]
+        [(and (= (car (car paso5res)) (- (car pos) 1)) (= (cadr (car paso5res)) (- (cadr pos) 2)) (< 7 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 7)]
+        [(and (= (car (car paso5res)) (- (car pos) 2)) (= (cadr (car paso5res)) (- (cadr pos) 1)) (< 8 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 8)]
+        [else res]))
+
+
+;; Nombre: getCasillasPared
+;; Parametros: listaLogica noVisitados destinosPosibles contador flag n
+;; Descripcion: Esta funcion lo que realiza es encontrar dentro de noVisitados las casillas mas cercanas a la pared de la izquierda del tablero
+;; Retorna: Una lista con los posibles destinos
+
+(define (getCasillasPared listaLogica noVisitados destinosPosibles contador flag n)
   (cond [(= contador 0) destinosPosibles]
-        [(= contador  flag) (getCasillasAristas pos listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
-        [(and (not (null? noVisitados)) (< (calcularAristas (car (car noVisitados)) (cadr (car noVisitados)) n) (calcularAristas (car (car destinosPosibles)) (cadr (car destinosPosibles)) n))) (getCasillasAristas pos listaLogica (cdr noVisitados) (list (car noVisitados)) (- contador 1) flag n)]
-        [(and (not (null? noVisitados)) (= (calcularAristas (car (car noVisitados)) (cadr (car noVisitados)) n) (calcularAristas (car (car destinosPosibles)) (cadr (car destinosPosibles)) n))) (getCasillasAristas pos listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
-        [else (getCasillasAristas pos listaLogica (cdr noVisitados) destinosPosibles (- contador 1) flag n)]))
+        [(= contador flag) (getCasillasPared listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
+        [(and (not (null? noVisitados)) (< (distancia2puntos (car (car noVisitados)) (cadr (car noVisitados)) n 99999 6) (distancia2puntos (car (car destinosPosibles)) (cadr (car destinosPosibles)) n 99999 6)))
+         (getCasillasPared listaLogica (cdr noVisitados) (list (car noVisitados)) (- contador 1) flag n)]
+        [(and (not (null? noVisitados)) (= (distancia2puntos (car (car noVisitados)) (cadr (car noVisitados)) n 99999 6) (distancia2puntos (car (car destinosPosibles)) (cadr (car destinosPosibles)) n 99999 6)))
+         (getCasillasPared listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
+        [else (getCasillasPared listaLogica (cdr noVisitados) destinosPosibles (- contador 1) flag n)]))
+
+;; Nombre: getCasillasEsquinas
+;; Parametros: listaLogica noVisitados(lista generada por la funcion getNOvisitados) destinosPosibles contador flag  n
+;; Descripcion: Realiza un trabajo similar a getCasillasAristas, pero en vez de retornar una lista con los destinos disponibles de menor arista,
+;; obtiene mas bien una lista con los destinos posibles que esten mas cerca de las esquinas.
+
+(define (getCasillasEsquinas listaLogica noVisitados destinosPosibles contador flag n)
+  (cond [(= contador 0) destinosPosibles]
+        [(= contador flag) (getCasillasEsquinas listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
+        [(and (not (null? noVisitados)) (< (distancia2puntos (car (car noVisitados)) (cadr (car noVisitados)) n 99999 0) (distancia2puntos (car (car destinosPosibles)) (cadr (car destinosPosibles)) n 99999 0)))
+         (getCasillasEsquinas listaLogica (cdr noVisitados) (list (car noVisitados)) (- contador 1) flag n)]
+        [(and (not (null? noVisitados)) (= (distancia2puntos (car (car noVisitados)) (cadr (car noVisitados)) n 99999 0) (distancia2puntos (car (car destinosPosibles)) (cadr (car destinosPosibles)) n 99999 0)))
+         (getCasillasEsquinas listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
+        [else (getCasillasEsquinas listaLogica (cdr noVisitados) destinosPosibles (- contador 1) flag n)]))
+
+;; Nombre: distancia2puntos
+;; Parametros: i j n distancia(valor por retornar) contador
+;; Descripcion: Si el contador de esta funcion empieza en 1 la funcion se encarga de calcular la distancia de i y j a cada una de las esquinas,
+;; guardando el menor valor siempre en la variable distancia. Solo el contador empieza en 6 realiza el mismo procedimiento pero no calculado con las esquinas, sino con las paredes
+;; Retorna: Entero
+
+(define (distancia2puntos i j n distancia contador)
+  (cond [(= contador 5) distancia]
+        [(= contador 10) distancia]
+        [(and (= contador 1) (<= (sqrt (+ (expt (- i 1) 2) (expt (- j 1) 2))) distancia)) (distancia2puntos i j n (sqrt (+ (expt (- i 1) 2) (expt (- j 1) 2))) (+ contador 1))]
+        [(and (= contador 2) (<= (sqrt (+ (expt (- i 1) 2) (expt (- j n) 2))) distancia)) (distancia2puntos i j n (sqrt (+ (expt (- i 1) 2) (expt (- j n) 2))) (+ contador 1))]
+        [(and (= contador 3) (<= (sqrt (+ (expt (- i n) 2) (expt (- j 1) 2))) distancia)) (distancia2puntos i j n (sqrt (+ (expt (- i n) 2) (expt (- j 1) 2))) (+ contador 1))]
+        [(and (= contador 4) (<= (sqrt (+ (expt (- i n) 2) (expt (- j n) 2))) distancia)) (distancia2puntos i j n (sqrt (+ (expt (- i n) 2) (expt (- j n) 2))) (+ contador 1))]
+        [(and (= contador 6) (<= (- i 1) distancia)) (distancia2puntos i j n (- i 1) (+ contador 1))]
+        [(and (= contador 7) (<= (- n i) distancia)) (distancia2puntos i j n (- n i) (+ contador 1))]
+        [(and (= contador 8) (<= (- j 1) distancia)) (distancia2puntos i j n (- j 1) (+ contador 1))]
+        [(and (= contador 9) (<= (- n j) distancia)) (distancia2puntos i j n (- n j) (+ contador 1))]
+        [else (distancia2puntos i j n distancia (+ contador 1))]))
+
+;; Nombre: getCasillasAristas
+;; Parametros: listaLogica noVisitados destinosPosibles contador flag  n
+;; Descripcion: Realiza un trabajo similar a getNOvisitados, pero en vez de buscar que casillas no han sido visitadas busca las de menor cantidad de aristas
+;; Retorna: Una lista de pares ordenados con los pares ordenados que pertenecen a las casillas con menos aristas
+
+(define (getCasillasAristas listaLogica noVisitados destinosPosibles contador flag n)
+  (cond [(= contador 0) destinosPosibles]
+        [(= contador  flag) (getCasillasAristas listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
+        [(and (not (null? noVisitados)) (< (calcularAristas (car (car noVisitados)) (cadr (car noVisitados)) n) (calcularAristas (car (car destinosPosibles)) (cadr (car destinosPosibles)) n)))
+         (getCasillasAristas listaLogica (cdr noVisitados) (list (car noVisitados)) (- contador 1) flag n)]
+        [(and (not (null? noVisitados)) (= (calcularAristas (car (car noVisitados)) (cadr (car noVisitados)) n) (calcularAristas (car (car destinosPosibles)) (cadr (car destinosPosibles)) n)))
+         (getCasillasAristas listaLogica (cdr noVisitados) (append destinosPosibles (list (car noVisitados))) (- contador 1) flag n)]
+        [else (getCasillasAristas listaLogica (cdr noVisitados) destinosPosibles (- contador 1) flag n)]))
 
 ;; Nombre getNOvisitados
 ;; Parametros: pos listaLogica destinos(lista general de posibles destinos) noVisitados contador
@@ -41,11 +148,14 @@
         [else (getNOvisitados pos listaLogica (cdr destinos) noVisitados (- contador 1))]))
 
 
+
+
 ;; Nombre: actualizarLista
-;; Parametros: listaLogica i j pos paso listaActualizada n
+;; Parametros: listaLogica i(contador) j(contador) pos(posicion que hay que actualizar) paso listaActualizada n
 ;; Descripcion: Esta funcion se debe de llamar a la hora de realizar un movimiento del caballo. Se encarga de construir una nueva lista logica en la que se ve actualizado el valor
 ;; de visitado con el parametro paso en la casilla actual
 ;; nota(creo): remover en los destinosPosibles de la casilla actual la casilla a la cual se va a mover
+
 (define (actualizarLista listaLogica i j pos paso listaActualizada n)
   (cond [(> i n) listaActualizada]
         [(and (<= j n) (= (revisarPosicion (car pos) (cadr pos) listaLogica) 1))
@@ -126,7 +236,7 @@
         [(and (= i (- n_og 1)) (= j 1)) (append listaDestinos (cons (list  (- i 2) (+ j 1)) '()) (cons (list  (+ i 1) (+ j 2)) '()) (cons (list  (- i 1) (+ j 2)) '()))]
         [(and (= i (- n_og 1)) (= j n_og)) (append listaDestinos (cons (list  (+ i 1) (- j 2)) '()) (cons (list  (- i 1) (- j 2)) '()) (cons (list  (- i 2) (- j 1)) '()))]
         [(and (= i 2) (= j 1)) (append listaDestinos (cons (list  (+ i 1) (+ j 2)) '()) (cons (list  (- i 1) (+ j 2)) '()) (cons (list  (+ i 2) (+ j 1)) '()))]
-        [(and (= i 2) (= j n_og)) (append listaDestinos (cons (list  (+ i 1) (- j 2)) '()) (cons (list  (- i 1) (- j 2)) '()) (cons (list  (+ i 2) (+ j 1)) '()))]
+        [(and (= i 2) (= j n_og)) (append listaDestinos (cons (list  (+ i 1) (- j 2)) '()) (cons (list  (- i 1) (- j 2)) '()) (cons (list  (+ i 2) (- j 1)) '()))]
         [(and (= i n_og) (= j 2)) (append listaDestinos (cons (list  (- i 2) (- j 1)) '()) (cons (list  (- i 2) (+ j 1)) '()) (cons (list  (- i 1) (+ j 2)) '()))]
         [(and (= i n_og) (= j (- n_og 1))) (append listaDestinos (cons (list  (- i 2) (- j 1)) '()) (cons (list  (- i 2) (+ j 1)) '()) (cons (list  (- i 1) (- j 2)) '()))] ))
 
@@ -192,11 +302,18 @@
 ;; Paramtetros: n (dimension nxn de la matriz) i (filas), j (columnas), matriz (matriz que se retorna como solucion)
 ;; Retorna: una matriz nxn en el que cada elemento es una lista vacia
 
-(define (crearMatriz i j n matriz)
+(define (crearMatriz i j n matriz listaLogica)
   (cond [(> i n) matriz]
-        [(<= j n) (crearMatriz i (+ j n) n (append matriz (list (crearFila i 1 n '())) ))]
-        [else (crearMatriz  (+ i 1) 1 n matriz)]))
+        [(<= j n) (crearMatriz i (+ j n) n (append matriz (list (crearFila i 1 n '() listaLogica)) ) (cddr (cddddr listaLogica)))]
+        [else (crearMatriz  (+ i 1) 1 n matriz listaLogica)]))
 
-(define (crearFila i j n fila)
+(define (crearFila i j n fila listaLogica)
   (cond [(> j n) fila]
-        [else (crearFila i (+ j 1) n (append fila (cons '() '())))]))
+        [else (crearFila i (+ j 1) n (append fila (cons (car (cddr (car listaLogica))) '())) (cdr listaLogica))]))
+
+
+
+
+
+
+
