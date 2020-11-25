@@ -12,7 +12,7 @@
         [else "Porfavor introduzca parametros validos"]))
 
 (define (PDC2_aux listaLog pos paso n)
-  (backtracking listaLog (getNodo(listaLog pos)) pos paso n '()))
+  (backtracking listaLog (getNodo listaLog pos) pos paso n '()))
 
 (define (PDC_aux listaLogica pos paso n posinicial res)
   (paso_dos pos (actualizarLista listaLogica 1 1 pos paso '() n) paso (getCasillasAristas listaLogica (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n)) '() (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) n) n posinicial))
