@@ -10,8 +10,6 @@
 (define (PDC_aux listaLogica pos paso n posinicial res)
   (paso_dos pos (actualizarLista listaLogica 1 1 pos paso '() n) paso (getCasillasAristas listaLogica (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n)) '() (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) n) n posinicial))
 
-
-
 ;; Nombre: paso_dos
 ;; Parametros: pos listaLogica pos paso paso2res(lista generada con getCasillasAristas) n
 ;; Descripcion: En base al algoritmo desarrollado esta funcion consta de la fase 2 de este algoritmo, aqui aun no se realiza ninguna condicion de desempate,
@@ -37,7 +35,6 @@
   (cond [(= (length paso3res) 1) (paso_dos (list (car (car paso3res)) (cadr (car paso3res))) (actualizarLista listaLogica 1 1 (car paso3res) (+ paso 1) '() n) (+ paso 1) (getCasillasAristas listaLogica (getNOvisitados (list (car (car paso3res)) (cadr (car paso3res))) listaLogica (getDestinos listaLogica (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res))))) '() (calcularAristas (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res)))) n)) '() (length (getNOvisitados (list (car (car paso3res)) (cadr (car paso3res))) listaLogica (getDestinos listaLogica (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res))))) '() (calcularAristas (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res)))) n))) (length (getNOvisitados (list (car (car paso3res)) (cadr (car paso3res))) listaLogica (getDestinos listaLogica (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res))))) '() (calcularAristas (car (list (car (car paso3res)) (cadr (car paso3res)))) (cadr (list (car (car paso3res)) (cadr (car paso3res)))) n))) n) n posinicial)]
         [else (paso_cuatro pos listaLogica paso (getCasillasPared listaLogica paso3res '() (length paso3res) (length paso3res) n) n posinicial)]))
 
-
 ;; Nombre: paso_cuatro
 ;; Parametros: pos listaLogica paso paso4res(listaGenerada con getCasillasPared) n
 ;; Descripcion: El paso 4 y penultimo criterio de desempate del algoritmo se basa en escoger las casillas basandose en su cercania a una de las paredes del tablero, en este caso
@@ -47,8 +44,6 @@
   (cond [(= (length paso4res) 1) (paso_dos (list (car (car paso4res)) (cadr (car paso4res))) (actualizarLista listaLogica 1 1 (car paso4res) (+ paso 1) '() n) (+ paso 1) (getCasillasAristas listaLogica (getNOvisitados (list (car (car paso4res)) (cadr (car paso4res))) listaLogica (getDestinos listaLogica (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res))))) '() (calcularAristas (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res)))) n)) '() (length (getNOvisitados (list (car (car paso4res)) (cadr (car paso4res))) listaLogica (getDestinos listaLogica (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res))))) '() (calcularAristas (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res)))) n))) (length (getNOvisitados (list (car (car paso4res)) (cadr (car paso4res))) listaLogica (getDestinos listaLogica (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res))))) '() (calcularAristas (car (list (car (car paso4res)) (cadr (car paso4res)))) (cadr (list (car (car paso4res)) (cadr (car paso4res)))) n))) n) n posinicial)]     
         [(> (length paso4res) 1) (paso_cinco pos listaLogica paso (getCasillaCuadrante pos paso4res '() 10) n posinicial)]
         [else listaLogica]))
-        
-
 
 ;; Nombre: paso_cinco
 ;; Parametros: pos listaLogica paso paso5res(lista generada con getCasillasCuadrante) n posinicial
@@ -74,7 +69,6 @@
         [(and (= (car (car paso5res)) (- (car pos) 1)) (= (cadr (car paso5res)) (- (cadr pos) 2)) (< 7 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 7)]
         [(and (= (car (car paso5res)) (- (car pos) 2)) (= (cadr (car paso5res)) (- (cadr pos) 1)) (< 8 prioridad)) (getCasillaCuadrante pos (cdr paso5res) (cons (list (car (car paso5res)) (cadr (car paso5res)))'()) 8)]
         [else res]))
-
 
 ;; Nombre: getCasillasPared
 ;; Parametros: listaLogica noVisitados destinosPosibles contador flag n
@@ -147,9 +141,6 @@
         [(= (visitado? listaLogica (caar destinos) (cadar destinos)) 0) (getNOvisitados pos listaLogica (cdr destinos) (append noVisitados (list (car destinos))) (- contador 1))]
         [else (getNOvisitados pos listaLogica (cdr destinos) noVisitados (- contador 1))]))
 
-
-
-
 ;; Nombre: actualizarLista
 ;; Parametros: listaLogica i(contador) j(contador) pos(posicion que hay que actualizar) paso listaActualizada n
 ;; Descripcion: Esta funcion se debe de llamar a la hora de realizar un movimiento del caballo. Se encarga de construir una nueva lista logica en la que se ve actualizado el valor
@@ -174,7 +165,6 @@
   (cond [(< n 5) "Solo se aceptan matrices nxn con n >= 5"] 
         [else (crearListaAux 1 1 n '())]))
 
-
 ;; Nombre: crearListaAux
 ;; Parametros: i (valor inicial de recorrido para filas), j (valor inicial de recorrido para columnas), n_og (dimension de la matriz), lista (la lista logica)
 ;; Descripcion: Esta funcion se encarga de crear las filas y las columnas de la matriz por medio de un incremento en los valores i y j. Ademas a la hora de crear
@@ -185,10 +175,8 @@
 
 (define (crearListaAux i j n_og lista)
   (cond [(> i n_og) lista]
-        [(<= j n_og) (crearListaAux i (+ j 1) n_og (append lista (cons (list (calcularAristas i j n_og) (list i j) 0 (crearDestinos '() i j (calcularAristas i j n_og) n_og)) '() )))]
+        [(<= j n_og) (crearListaAux i (+ j 1) n_og (append lista (cons (list (calcularAristas i j n_og) (list i j) 0 (crearDestinos '() i j (calcularAristas i j n_og) n_og ) '() '() ) '() )))]
         [else (crearListaAux  (+ i 1) 1 n_og lista)]))
-
-
 
 ;; Nombre: calcularArista
 ;; Parametros: i j n_og
@@ -207,8 +195,6 @@
         [(or (and (= i 1) (= j 2)) (and (= i 1) (= j (- n_og 1))) (and (= i (- n_og 1)) (= j 1)) (and (= i (- n_og 1)) (= j n_og))
              (and (= i 2) (= j 1)) (and (= i 2) (= j n_og)) (and (= i n_og) (= j 2)) (and (= i n_og) (= j (- n_og 1)))) 3]
         [else 4]))
-
-
 
 ;; Nombre: crearDestinos
 ;; Parametros: i j cant_aristas n_og
@@ -264,13 +250,10 @@
   (append listaDestinos  (cons (list  (- i 1) (- j 2)) '()) (cons (list  (- i 1) (+ j 2)) '()) (cons (list  (- i 2) (- j 1)) '()) (cons (list  (- i 2) (+ j 1)) '())
           (cons (list  (+ i 2) (- j 1)) '()) (cons (list  (+ i 2) (+ j 1)) '()) (cons (list  (+ i 1) (- j 2)) '()) (cons (list  (+ i 1) (+ j 2)) '())))
 
-
-
 ;; Nombre: getDestinos
 ;; Parameteros: lista (lista logica), i(fila del elemento), j(columna del elemento)
 ;; Descripcion: Basandose en los parametros i j esta funcion busca esta casilla dentro de la lista logica y retorna una lista con los destinos de dicha casilla
 ;; Retorna: Una lista con destinos
-
 
 (define (getDestinos lista i j)  
   (cond [(= (revisarPosicion i j lista) 1)(car (cdddr (car lista)))]
@@ -280,14 +263,11 @@
   (cond [(and (= i (car (car (cdr (car lista))))) (= j (cadr (car (cdr (car lista)))))) 1]
         [else 0]))
 
-
-
 ;; Nombre: visitado?
 ;; Parametros: lista (lista logica), i(fila del elemento), j(columna del elemento)
 ;; Descripcion: Basicamente busca dentro de la lista basanadose en las posiciones i j de la casilla el valor de visitado de la casilla
 ;; y si el valor de visitado es distinto de 0 retorna un 0, sino un 1
 ;; Retorna: 1 o 0
-
 
 (define (visitado? lista i j)
   (cond [(= (revisarPosicion i j lista) 1) (checkVisitado (car (cddr (car lista))))]
@@ -296,7 +276,6 @@
 (define (checkVisitado bool)
   (cond [(= bool 0) 0]
         [else 1]))
-
 
 ;; Nombre: crearMatriz
 ;; Paramtetros: n (dimension nxn de la matriz) i (filas), j (columnas), matriz (matriz que se retorna como solucion)
@@ -311,9 +290,89 @@
   (cond [(> j n) fila]
         [else (crearFila i (+ j 1) n (append fila (cons (car (cddr (car listaLogica))) '())) (cdr listaLogica))]))
 
+;;
 
+;; Nombre: editSpot
+;; Paramtetros: (lista) recibe la lista a la que se le va a hacer el cambio,
+;;(pos) posicion en la lista que se va a cambiar, (content) valor que se quiere insertar
+;; Retorna: Lista con cambios efectuados
 
+(define(editSpot lista pos content)
+  (editSpotAux lista pos content 0 '())
+  )
 
+;; Nombre: editSpotAux
+;; Paramtetros: (lista) recibe la lista a la que se le va a hacer el cambio,
+;;(pos) posicion en la lista que se va a cambiar, (content) valor que se quiere insertar
+;;(cntr) counter, (res)lista que almacena el resultado
+;; Descripcion: Va truncando la lista hasta llegar a la posicion deseada, agrega el valor y sigue anadiendo los valores de la lista hasta llegar a '()
+;; Retorna: Lista con cambios efectuados
+
+(define (editSpotAux lista pos content cntr res)
+  (cond [(equal? lista '())res]
+        [(= pos cntr) (editSpotAux (cdr lista) pos content (+ cntr 1) (append res (list content)))]
+        [else (editSpotAux (cdr lista) pos content (+ cntr 1) (append res (list(car lista))))]
+       )
+  )
+
+;;Nombre: getPos
+;;Parametros: (lista)lista con el dato deseado (pos) ubicacion del valor deseado
+;;Descripcion: invoca a la funcion auxiliar
+;;Retorna: resultado de la funcion aux
+(define(getPos lista pos)
+  (getPosAux lista pos 0)
+  )
+
+;;Nombre: getPosAux
+;;Parametros: (lista)lista deseada (pos)posicion del dato (cntr) contador
+;;Descripcion: aumenta un contador hasta llegar a la posicion deseada mientras trunca la lista y retorna el valor
+;;Retorna: valor en la posicion de la lista
+(define(getPosAux lista pos cntr)
+  (cond [(= pos cntr)(car lista)]
+        [else (getPosAux (cdr lista) pos (+ cntr 1 ))]
+        ))
+
+;;Nombre: en
+;;Parametros: (valor) una lista (lista) lista en la que se hace la busqueda
+;;Descripcion: verifica que un valor este dentro de la lista
+;;Retorna: booleano
+(define (en valor lista)
+  (cond[(equal? lista '()) false]
+       [(equal? valor (list(car lista))) true]
+       [else (en valor (cdr lista))]
+       )
+  )
+;;Nombre:enLista
+;;Parametros:(ListaB) lista de valores que se desean buscar (ListaA)
+;;Descripcion:Recorre  la lista de valores deseados dentro de la (ListaB)
+;;Retorna:booleano
+(define (enLista ListaB ListaA)
+  (cond [(equal? ListaB '()) false]
+        [(en (list(car ListaB)) ListaA) true]
+        [else(enLista (cdr ListaB) ListaA )]
+        )
+  )
+
+;;Nombre: eliminarL
+;;Parametros: (x)valor por eliminar (lista)lista victima
+;;Descripcion: recorre la lista hasta encontrar el valor deseado y lo remueve
+;;Retorna: Lista sin el valor por deseado
+(define(eliminarL x lista)
+  (cond[(equal? '() lista)'()]
+       [(equal? x (list(car lista))) (cdr lista)]
+       [else (append (list(car lista)) (eliminarL x (cdr lista)))]
+       )
+  )
+
+;;Nombre:getMovibles
+;;Parametros: (Movs)Argumento con posibles movimientos (MovsSinRespuesta)Movimientos descartados por algoritmo
+;;Descripcion: Comparacion de listas de movimiento que permite al algoritmo de backtrackin ignorar las decisiones sin respuesta o tomadas anteriormente
+;;Retorna: (posible mejor movimiento)
+(define (getMovibles Movs MovsSinRespuesta)
+  (cond[(equal? MovsSinRespuesta '()) Movs]
+       [(en(list(car MovsSinRespuesta)) Movs) (getMovibles (eliminarL (list(car MovsSinRespuesta)) Movs ) (cdr MovsSinRespuesta))]
+       [else (getMovibles Movs (cdr MovsSinRespuesta) )])
+  )
 
 
 
