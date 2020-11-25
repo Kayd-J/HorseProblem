@@ -7,6 +7,13 @@
   (cond [(and (number? n) (list? pos)) (PDC_aux (crearListaLogica n) pos 1 n  pos '())]
         [else "Porfavor introduzca parametros validos"]))
 
+(define (PDC2 n pos)
+  (cond [(and (number? n) (list? pos)) (PDC2_aux (crearListaLogica n) pos 1 n)]
+        [else "Porfavor introduzca parametros validos"]))
+
+(define (PDC2_aux listaLog pos paso n)
+  (backtracking listaLog (getNodo(listaLog pos)) pos paso n '()))
+
 (define (PDC_aux listaLogica pos paso n posinicial res)
   (paso_dos pos (actualizarLista listaLogica 1 1 pos paso '() n) paso (getCasillasAristas listaLogica (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n)) '() (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) n) n posinicial))
 
@@ -147,12 +154,14 @@
 ;; de visitado con el parametro paso en la casilla actual
 ;; nota(creo): remover en los destinosPosibles de la casilla actual la casilla a la cual se va a mover
 
-(define (actualizarLista listaLogica i j pos paso listaActualizada n)
+(define (actualizarLista listaLogica i j pos paso listaActualizada n badway pasado)
   (cond [(> i n) listaActualizada]
         [(and (<= j n) (= (revisarPosicion (car pos) (cadr pos) listaLogica) 1))
-         (actualizarLista (cdr listaLogica) i (+ j 1) pos paso (append listaActualizada (cons (list (calcularAristas i j n) (list i j) paso (crearDestinos '() i j (calcularAristas i j n) n)) '() )) n)]
-        [(<= j n) (actualizarLista (cdr listaLogica) i (+ j 1) pos paso (append listaActualizada (list (car listaLogica))) n)]
-        [else (actualizarLista  listaLogica (+ i 1) 1 pos paso listaActualizada n)]))
+         (actualizarLista (cdr listaLogica) i (+ j 1) pos paso (append listaActualizada (cons (list (calcularAristas i j n) (list i j) paso (crearDestinos '() i j (calcularAristas i j n) n ) badway pasado) '() )) n badway pasado)]
+        [(<= j n) (actualizarLista (cdr listaLogica) i (+ j 1) pos paso (append listaActualizada (list (car listaLogica))) n badway pasado)]
+        [else (actualizarLista  listaLogica (+ i 1) 1 pos paso listaActualizada n badway pasado)]))
+
+
 
 ;; Nombre: crearListaLogica
 ;; Parametros: n (valor entero para crear la matriz nxn)
@@ -375,4 +384,31 @@
   )
 
 
+(define (backtracking listaLog LLnodo pos paso n res)
+  (cond[(and (or (= paso 0)(= paso 1)) (equal? '() (getPosibleMoves LLnodo))) res];;condicion de respuesta
+       [(equal? '() (getPosibleMoves LLnodo)) (backtracking (devueltaBT listaLog LLnodo pos paso n) (getNodo listaLog (cadr(cddddr LLnodo))) (cadr(cddddr LLnodo)) (- paso 1) n res ) ];;condicion de devolverse
+       [(equal? paso (* n n)) (encSol listaLog LLnodo pos paso n res )];;condicion de append res
+       [else(mover listaLog LLnodo pos paso n res )];;condicion de moverse
+    
+    ))
 
+(define (getNodo listaLog pos)
+  (cond [(equal? listaLog '()) '() ]
+        [(equal? (cadar listaLog) pos) (car listaLog)]
+        [else(getNodo (cdr listaLog) pos)])
+  )
+(define(encSol listaLog LLnodo pos paso n res )
+  (backtracking (devueltaBT listaLog LLnodo pos paso n) (getNodo listaLog (cadr(cddddr LLnodo))) (cadr(cddddr LLnodo)) (- paso 1) n (append res listaLog))
+  )
+
+(define(devueltaBT ListaLog LLnodo Pos Paso n)
+  (actualizarLista (actualizarLista ListaLog 1 1 Pos 0 '() n '() '()) 1 1 (cadr(cddddr LLnodo)) (- Paso 1) '() n (append (car(cddddr (getNodo ListaLog (cadr(cddddr LLnodo))))) Pos ) (cadr(cddddr (getNodo ListaLog (cadr(cddddr LLnodo))))))
+  )
+
+(define(mover listaLog LLnodo pos paso n res )
+  (backtracking (actualizarLista listaLog 1 1 (caar(cdddr pos)) (+ paso 1) '() n (car(cddddr(getNodo(caar(cdddr pos))))) (pos)))
+  )
+
+(define (getPosibleMoves nodo)
+  (getMovibles (cadddr nodo) (car (cddddr nodo)) )
+  )
