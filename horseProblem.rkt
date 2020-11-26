@@ -406,7 +406,7 @@
   )
 
 (define(mover listaLog LLnodo pos paso n res )
-  (backtracking (actualizarLista listaLog 1 1 (caar(cdddr pos)) (+ paso 1) '() n (car(cddddr(getNodo(caar(cdddr pos))))) (pos)))
+  (backtracking (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (getNodo (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (caar(cdddr (getNodo listaLog pos)))) (caar(cdddr (getNodo listaLog pos))) paso n res )
   )
 
 (define (getPosibleMoves nodo)
