@@ -12,7 +12,7 @@
         [else "Porfavor introduzca parametros validos"]))
 
 (define (PDC2_aux listaLog pos paso n)
-  (backtracking listaLog (getNodo listaLog pos) pos paso n '()))
+  (backtracking (actualizarLista listaLog 1 1 pos paso '() n '() '()) (getNodo (actualizarLista listaLog 1 1 pos paso '() n '() '()) pos) pos paso n '()))
 
 (define (PDC_aux listaLogica pos paso n posinicial res)
   (paso_dos pos (actualizarLista listaLogica 1 1 pos paso '() n) paso (getCasillasAristas listaLogica (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n)) '() (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) (length (getNOvisitados pos listaLogica (getDestinos listaLogica (car pos) (cadr pos)) '() (calcularAristas (car pos) (cadr pos) n))) n) n posinicial))
@@ -347,7 +347,7 @@
 ;;Retorna: booleano
 (define (en valor lista)
   (cond[(equal? lista '()) false]
-       [(equal? valor (list(car lista))) true]
+       [(equal? valor (car lista)) true]
        [else (en valor (cdr lista))]
        )
   )
@@ -377,19 +377,22 @@
 ;;Parametros: (Movs)Argumento con posibles movimientos (MovsSinRespuesta)Movimientos descartados por algoritmo
 ;;Descripcion: Comparacion de listas de movimiento que permite al algoritmo de backtrackin ignorar las decisiones sin respuesta o tomadas anteriormente
 ;;Retorna: (posible mejor movimiento)
-(define (getMovibles Movs MovsSinRespuesta)
+(define (getMovibles Movs MovsSinRespuesta ListaLog)
   (cond[(equal? MovsSinRespuesta '()) Movs]
-       [(en(list(car MovsSinRespuesta)) Movs) (getMovibles (eliminarL (list(car MovsSinRespuesta)) Movs ) (cdr MovsSinRespuesta))]
-       [else (getMovibles Movs (cdr MovsSinRespuesta) )])
+       [(en(car MovsSinRespuesta) Movs) (getMovibles (eliminarL (list(car MovsSinRespuesta)) Movs ) (cdr MovsSinRespuesta) ListaLog) ]
+       [else (getMovibles Movs (cdr MovsSinRespuesta) ListaLog )])
   )
 
 
 (define (backtracking listaLog LLnodo pos paso n res)
-  (cond[(and (or (= paso 0)(= paso 1)) (equal? '() (getPosibleMoves LLnodo))) res];;condicion de respuesta
-       [(equal? '() (getPosibleMoves LLnodo)) (backtracking (devueltaBT listaLog LLnodo pos paso n) (getNodo listaLog (cadr(cddddr LLnodo))) (cadr(cddddr LLnodo)) (- paso 1) n res ) ];;condicion de devolverse
-       [(equal? paso (* n n)) (encSol listaLog LLnodo pos paso n res )];;condicion de append res
+ (print paso) 
+  (cond
+    [(or(equal? (length res) 1)) 10];;condicion de respuesta
+       [(equal? '() (getPosibleMoves listaLog LLnodo)) (backtracking (devueltaBT listaLog LLnodo pos paso n) (getNodo listaLog (cadr(cddddr LLnodo))) (cadr(cddddr LLnodo)) (- paso 1) n res ) ];;condicion de devolverse
+       [(equal? paso (* (* n -1) n)) listaLog];;condicion de append res
        [else(mover listaLog LLnodo pos paso n res )];;condicion de moverse
-    
+       ;(and (or (= paso 0)(= paso 1)) (equal? '() (getPosibleMoves listaLog LLnodo)))
+    ;(encSol listaLog LLnodo pos paso n res )
     ))
 
 (define (getNodo listaLog pos)
@@ -409,6 +412,6 @@
   (backtracking (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (getNodo (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (caar(cdddr (getNodo listaLog pos)))) (caar(cdddr (getNodo listaLog pos))) paso n res )
   )
 
-(define (getPosibleMoves nodo)
-  (getMovibles (cadddr nodo) (car (cddddr nodo)) )
+(define (getPosibleMoves listaLog nodo)
+  (getMovibles  (getNOvisitados (cadr nodo) listaLog (cadddr nodo) '() (car nodo)) (append  (car (cddddr nodo))) listaLog )
   )
