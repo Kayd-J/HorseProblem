@@ -384,12 +384,11 @@
   )
 
 
-(define (backtracking listaLog LLnodo pos paso n res)
- (print paso) 
+(define (backtracking listaLog LLnodo pos paso n res) 
   (cond
     [(or(equal? (length res) 1)) 10];;condicion de respuesta
        [(equal? '() (getPosibleMoves listaLog LLnodo)) (backtracking (devueltaBT listaLog LLnodo pos paso n) (getNodo listaLog (cadr(cddddr LLnodo))) (cadr(cddddr LLnodo)) (- paso 1) n res ) ];;condicion de devolverse
-       [(equal? paso (* (* n -1) n)) listaLog];;condicion de append res
+       [(equal? paso 4) listaLog];;condicion de append res
        [else(mover listaLog LLnodo pos paso n res )];;condicion de moverse
        ;(and (or (= paso 0)(= paso 1)) (equal? '() (getPosibleMoves listaLog LLnodo)))
     ;(encSol listaLog LLnodo pos paso n res )
@@ -409,9 +408,11 @@
   )
 
 (define(mover listaLog LLnodo pos paso n res )
-  (backtracking (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (getNodo (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (caar(cdddr (getNodo listaLog pos)))) (caar(cdddr (getNodo listaLog pos))) paso n res )
+  (print (list paso pos))
+  (backtracking (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (getNodo (actualizarLista listaLog 1 1 (caar(cdddr (getNodo listaLog pos))) (+ paso 1) '() n (car(cddddr(getNodo listaLog (caar(cdddr LLnodo))))) pos) (caar(cdddr (getNodo listaLog pos)))) (caar(cdddr (getNodo listaLog pos))) (+ paso 1) n res )
   )
 
 (define (getPosibleMoves listaLog nodo)
+  (print  (getMovibles  (getNOvisitados (cadr nodo) listaLog (cadddr nodo) '() (car nodo)) (append  (car (cddddr nodo))) listaLog ) )
   (getMovibles  (getNOvisitados (cadr nodo) listaLog (cadddr nodo) '() (car nodo)) (append  (car (cddddr nodo))) listaLog )
   )
